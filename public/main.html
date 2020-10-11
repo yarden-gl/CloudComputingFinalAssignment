@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FairestFeline</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<h1 class="h1">Fairest Feline</h1>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<script>
+    async function diagram() {
+        var response = await fetch('http://localhost:3000/public/main.html');
+        var electionCount = await response.json()
+
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            theme: "light2",
+            title: {
+                text: ""
+            },
+            axisY: {
+                title: "# of Votes"
+            },axisX: {
+                title: "Candidates"
+            },
+            data: [{
+                type: "column",
+                dataPoints: [
+                    {y: electionCount[0], label: "Luke Skywhisker"},
+                    {y: electionCount[1], label: "Catrick Swayze"},
+                    {y: electionCount[2], label: "Mr. Meowgi"}
+                ]
+            }]
+        });
+        chart.render();
+    }
+
+    diagram();
+
+    function voting() {
+        let selectedGender, gender, chosenCandidate, time, timeStamp, vote = {};
+        let numbers = /^[0-9]+$/;
+        let isPetOwner = false;
+        let id = document.getElementById('Id').value;
+        if (id === "") {
+            alert('Please enter your Id');
+        } else {
+            if (id.match(numbers) && id.length === 9) {
+                console.log('success')
+                gender = document.getElementById('female')
+                if (gender.checked) {
+                    selectedGender = gender.value;
+                } else {
+                    selectedGender = 'male';
+                }
+                if (document.getElementById('petOwner').checked) {
+                    isPetOwner = true;
+                }
+
+                chosenCandidate = document.getElementById('chooseCand').value;
+                time = new Date();
+                timeStamp = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' '
+                    + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds();
+                console.log(timeStamp)
+                vote = `{"Candidate": ${chosenCandidate}, "Id": "${id}", "Gender": "${selectedGender}",
+                 "CatOwner": ${isPetOwner}, "Time": "${timeStamp}"}`
+                console.log("$$$$"+vote+ "$$$$$")
+
+
+                fetch('http://localhost:3000/public/main.html', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: vote
+                }).then(response=> response.json()).then(data =>{alert(data.text);})
+
+            } else {
+                alert('Id should contain exactly 9 digits')
+            }
+        }
+
+    }
+</script>
+<br><br>
+
+<div class="header"><b> Our Candidates:</b></div>
+<br>
+<div> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<img class="img1" src="im1.jpg"> &emsp;&emsp;&emsp;&emsp;&emsp;
+    <img class="img1" src="im2.jpg"> &emsp;&emsp;&emsp;&emsp;&emsp; <img class="img1" src="im3.jpg"></div>
+<div class="parag"><p>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp; # 1: Luke Skywhisker
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp; # 2: Catrick Swayze &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
+    # 3: Mr. Meowgi</p></div>
+<br>
+<div class="vote" align="center">
+    <label for="Id"> ID: &nbsp; </label><input type="text" id="Id" placeholder="Must be 9 digits" value="">
+    <br><label for="chooseCand">Choose a candidate</label>
+    <select id="chooseCand" name="candidates">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+    </select> &emsp;<p>Gender:</p>
+    <input type="radio" id="female" name="gender" value="female" checked><label for="female">Female</label> &emsp;
+    <input type="radio" id="male" name="gender" value="male"> <label for="male">Male</label>
+    &emsp;<p>Are you a cat owner?</p>
+    <input type="radio" name="petOwner" id="petOwner"><label for="petOwner">Yes</label> &emsp;
+    <input type="radio" name="petOwner" id="NotaPetOwner" checked><label for="NotaPetOwner">No</label>
+    <br><input type="submit" id="submit" onclick="voting()">
+</div>
+<br>
+</body>
+</html>

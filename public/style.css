@@ -1,0 +1,28 @@
+body {
+    font-family: "Lucida Calligraphy"  ;
+}
+
+.img1 {
+    width: 300px;
+    height: 300px;
+    align-items:  center;
+    border-style: solid;
+}
+
+.header {
+    font-size:26px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.parag {
+    font-size: 18px;
+    /*text-align: center;*/
+}
+
+.h1{
+    font-size: 50px;
+    font-weight: bolder;
+    text-align: center;
+}
+
